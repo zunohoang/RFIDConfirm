@@ -2,7 +2,7 @@ Welcome to the RFIDConfirm!
 # Cách sử dụng
 ## Phần 1 Nạp code ở folder HardWare/esp8266code/*.uno vào Module Esp8266
 Kiểm tra lại ip server bằng lệnh **ipconfig** và dán nó vào code ở phần URL cho phù hợp trước khi nạp code
-## Phần 2
+## Phần 2 Cài đặt cho máy chủ
 1. Cài đặt NodeJs
 2. Chạy lệnh 
 `npm i express`
