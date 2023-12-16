@@ -16,7 +16,7 @@ class confirmController {
     // body: {UIDrfid, TOKEN} ;
     async insert(req, res, next) {
         var x = moment().format('DD/MM/YYYY');
-        console.log(x);
+        console.log(x, req.body.MaRFID);
         HocPhan.find({
             "SinhVien.MaRFID": req.body.MaRFID,
             "LichHoc.Ngay": x
