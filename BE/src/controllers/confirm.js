@@ -13,7 +13,7 @@ const KiemTraChenhLech = (MocThoiGian) => {
 class confirmController {
 
     // POST /confirm/:MaSinhVien 
-    // body: {UIDrfid, TOKEN} ; params: {MaSinhVien}
+    // body: {UIDrfid, TOKEN} ;
     async insert(req, res, next) {
         var x = moment().format('DD/MM/YYYY');
         console.log(x);
@@ -99,6 +99,8 @@ class confirmController {
                 })
             })
     }
+
+
     // // POST /confirm/:MaSinhVien
     // insert(req, res) {
     //     SinhVien.findOneAndUpdate({

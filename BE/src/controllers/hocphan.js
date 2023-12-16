@@ -23,6 +23,114 @@ async function dataSinhVien(maSinhVien) {
 }
 
 class hocphanController {
+
+    addHocPhans(req, res, next) {
+        var sheet = req.body.sheet;
+        console.log(sheet)
+        HocPhan.insertMany(sheet)
+            .then(() => {
+                res.json(
+                    {
+                        code: true,
+                        message: 'Thêm thành công ALL hoc phan'
+                    }
+                )
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    code: false,
+                    error: err
+                })
+            })
+    }
+
+    addSinhViens(req, res, next) {
+        var sheet = req.body.sheet;
+        console.log(sheet)
+        HocPhan.findOneAndUpdate({
+            MaHocPhan: req.params.MaHocPhan
+        }, {
+            $push: {
+                SinhVien: {
+                    $each: sheet
+                }
+            }
+        })
+            .then(() => {
+                res.json(
+                    {
+                        code: true,
+                        message: 'Thêm thành công ALL sinh viên'
+                    }
+                )
+            })
+            .catch((err) => {
+                res.status(401).json({
+                    code: false,
+                    error: 'That bai'
+                })
+            })
+    }
+
+    addSinhVien(req, res, next) {
+        console.log(req.body)
+        HocPhan.findOne({ MaHocPhan: req.params.MaHocPhan })
+            .then((hocphan) => {
+                if (hocphan) {
+                    hocphan.SinhVien.push({
+                        Ten: req.body.Ten,
+                        MaSinhVien: req.body.MaSinhVien,
+                        MaRFID: req.body.MaRFID,
+                        LopCoVan: req.body.LopCoVan,
+                    });
+                    hocphan.save()
+                        .then(() => {
+                            return res.status(200).json({
+                                code: true,
+                                message: 'Add hocphan success',
+                            })
+                        })
+                        .catch((err) => {
+                            return res.status(401).json({
+                                code: false,
+                                error: 'Unauthorized'
+                            })
+                        })
+                }
+                else {
+                    console.log(2)
+                    return res.status(401).json({
+                        code: false,
+                        error: 'Unauthorized'
+                    })
+                }
+            })
+            .catch((err) => {
+                return res.status(401).json({
+                    code: false,
+                    error: 'Unauthorized'
+                })
+            })
+    }
+    // DELETE api/deleteHocPhan/:MaHocPhan
+    deleteHocPhan(req, res, next) {
+        HocPhan.findOneAndDelete({
+            "MaHocPhan": req.params.MaHocPhan,
+        })
+            .then(() => {
+                return res.status(200).json({
+                    code: true,
+                    message: 'Delete success',
+                })
+            })
+            .catch(err => {
+                return res.status(500).json({
+                    code: false,
+                    error: err,
+                })
+            })
+    }
+    // GET api/getHocPhan
     getHocPhan(req, res, next) {
         if (req.query.MaHocPhan != null) {
             HocPhan.findOne({ MaHocPhan: req.query.MaHocPhan })

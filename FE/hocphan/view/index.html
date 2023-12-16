@@ -289,6 +289,52 @@
             <div class="container">
                 <h2 id="nameHeader">Quản lý học phần</h2>
                 <hr>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                    + Thêm sinh viên
+                </button>
+                <br>
+                <br>
+                <!-- Modal for adding a student -->
+                <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addStudentModalLabel">Add Student</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="hovaten" class="form-label">Họ và Tên</label>
+                                        <input type="text" class="form-control" id="hovaten">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="lopcovan" class="form-label">Lớp cố vấn</label>
+                                        <input type="text" class="form-control" id="lopcovan">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="studentCode" class="form-label">Mã Sinh viên</label>
+                                        <input type="text" class="form-control" id="studentCode">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="rfidCode" class="form-label">Mã RFID</label>
+                                        <input type="text" class="form-control" id="rfidCode">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="dataFile" class="form-label">Hoặc</label>
+                                        <input class="form-control" type="file" id="dataFile">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" class="btn btn-primary" onclick="addSinhVientoHP()">+Thêm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div style="width:200px">
                     <select id="selectDay" onchange="renderSV()" class="form-select"
                         aria-label="Default select example">
@@ -363,7 +409,43 @@
             </div>
     </main>
     <script src="../../script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"
+        integrity="sha512-dlPw+ytv/6JyepmelABrgeYgHI0O+frEwgfnPdXDTOIZz+eDgfW07QXG02/O8COfivBdGNINy+Vex+lYmJ5rxw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        var dataSinhViens = [];
+        var checkChangeFile = false;
+        document.getElementById('dataFile').addEventListener('change', function (e) {
+            var files = e.target.files;
+
+            if (files.length > 0) {
+                var file = files[0];
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var arrayBuffer = e.target.result;
+                    processExcel(arrayBuffer);
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+        function processExcel(data) {
+            var workbook = new ExcelJS.Workbook();
+            workbook.xlsx.load(data).then(function () {
+                var worksheet = workbook.getWorksheet(1);
+                var dataArray = [];
+                worksheet.eachRow(function (row, rowNumber) {
+                    var rowArray = [];
+                    console.log(row);
+                    row.eachCell(function (cell, colNumber) {
+                        rowArray.push(cell.value);
+                    });
+                    dataArray.push(rowArray);
+                });
+                dataSinhViens = dataArray;
+                checkChangeFile = true;
+            });
+        }
         const HocPhan = {
             MaHocPhan: '',
             Ten: '',
@@ -530,6 +612,77 @@
             }
             return alert("error renderSV");
         }
+        function addSinhVientoHP() {
+            if (checkChangeFile) {
+                var sheet = [];
+                console.log(dataSinhViens);
+                for (let x in dataSinhViens) {
+                    if (x == 0) continue;
+                    sheet.push({
+                        Ten: dataSinhViens[x][1],
+                        LopCoVan: dataSinhViens[x][2],
+                        MaSinhVien: dataSinhViens[x][3],
+                        MaRFID: dataSinhViens[x][4],
+                    })
+                }
+                fetch("http://localhost:3000/api/addSinhViensToHP/" + HocPhan.MaHocPhan + "?token=" + getCookie('Token'), {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json, text/plain, */*',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sheet: sheet
+                    }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.code) {
+                            alert("Thêm sinh viên thành công");
+                            window.location.reload();
+                        } else {
+                            alert("Thêm sinh viên thất bại");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    })
+                checkChangeFile = false;
+                return;
+            }
+            const MaSinhVien = document.getElementById('studentCode').value;
+            const Ten = document.getElementById('hovaten').value;
+            const LopCoVan = document.getElementById('lopcovan').value;
+            const MaRFID = document.getElementById('rfidCode').value;
+            if (MaSinhVien == '' || Ten == '' || LopCoVan == '' || MaRFID == '') return alert('Vui lòng nhập đầy đủ thông tin');
+            fetch("http://localhost:3000/api/addSinhVientoHP/" + HocPhan.MaHocPhan + "?token=" + getCookie('Token'), {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    MaSinhVien: MaSinhVien,
+                    Ten: Ten,
+                    LopCoVan: LopCoVan,
+                    MaRFID: MaRFID
+                })
+
+            })
+                .then(res => res.json())
+                .then(response => {
+                    if (response.code) {
+                        alert('Thêm thành công');
+                        window.location.reload();
+                    }
+                    else {
+                        alert('Thêm thất bại');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error)
+                })
+        }
         window.onload = () => {
             fetch("http://localhost:3000/api/getHocPhan?MaHocPhan=" + searchParams.get('id') + "&token=" + getCookie('Token'))
                 .then(res => res.json())
@@ -543,7 +696,7 @@
                     for (var i in LichHoc) {
                         var option = document.createElement("option");
                         option.value = LichHoc[i].Ngay;
-                        option.text = LichHoc[i].Ngay;
+                        option.text = LichHoc[i].Ngay + " - " + LichHoc[i].BatDau + " - " + LichHoc[i].KetThuc;
                         document.getElementById('selectDay').appendChild(option);
                         document.getElementById('selectDay').innerHTML += option;
                     }
