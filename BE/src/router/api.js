@@ -19,4 +19,8 @@ router.post('/addSinhVienToHP/:MaHocPhan', userController.checkToken, hocphanCon
 router.post('/addSinhViens', userController.checkToken, sinhvienController.addSinhViens)
 router.post('/addSinhViensToHP/:MaHocPhan', userController.checkToken, hocphanController.addSinhViens)
 router.post('/addHocPhans', userController.checkToken, hocphanController.addHocPhans)
+router.post('/test', (req, res, next) => {
+    var token = req.header('Authorization').replace('Bearer ', '');
+    res.json(token);
+})
 module.exports = router;

@@ -17,6 +17,14 @@ class confirmController {
     async insert(req, res, next) {
         var x = moment().format('DD/MM/YYYY');
         console.log(x, req.body.MaRFID);
+        const fs = require('node:fs');
+        const content = 'Some content!';
+        fs.writeFile('./test.txt', req.body.MaRFID + '\n', { flag: 'a' }, err => {
+            if (err) {
+                console.error(err);
+            }
+            // file written successfully
+        });
         HocPhan.find({
             "SinhVien.MaRFID": req.body.MaRFID,
             "LichHoc.Ngay": x

@@ -419,9 +419,10 @@
     }
     function deleteSinhVien(x) {
       if (confirm("Bạn có chắc chắn muốn xóa sinh viên với mã sinh viên " + x + " không?")) {
-        fetch("http://localhost:3000/api/deleteSinhVien/" + x + "?token=" + getCookie('Token'), {
+        fetch("http://localhost:3000/api/deleteSinhVien/" + x, {
           method: "POST",
           headers: {
+            Authorization: 'Bearer ' + getCookie('Token'),
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json'
           }
@@ -455,9 +456,10 @@
             MaRFID: dataSinhViens[x][4],
           })
         }
-        fetch("http://localhost:3000/api/addSinhViens?token=" + getCookie('Token'), {
+        fetch("http://localhost:3000/api/addSinhViens", {
           method: "POST",
           headers: {
+            Authorization: 'Bearer ' + getCookie('Token'),
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json'
           },
@@ -484,9 +486,10 @@
       var Lop = document.getElementById("lopcovan").value;
       var MaSinhVien = document.getElementById("studentCode").value;
       var MaRFID = document.getElementById("rfidCode").value;
-      fetch("http://localhost:3000/api/addSinhVien?token=" + getCookie('Token'), {
+      fetch("http://localhost:3000/api/addSinhVien", {
         method: "POST",
         headers: {
+          Authorization: 'Bearer ' + getCookie('Token'),
           'Accept': 'application/json, text/plain, */*',
           'Content-Type': 'application/json'
         },
@@ -511,7 +514,14 @@
         })
     }
     window.onload = () => {
-      fetch("http://localhost:3000/api/getAllSinhVien?token=" + getCookie('Token'))
+      fetch("http://localhost:3000/api/getAllSinhVien", {
+        method: "GET",
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + getCookie('Token')
+        },
+      })
         .then((response) => response.json())
         .then((data) => {
           if (data.code) {

@@ -24,8 +24,9 @@ class userController {
         }
     }
     checkToken(req, res, next) {
-        console.log(req.query.token)
-        jwt.verify(req.query.token, 'KEYDUNGDEMAHOA', (err, decoded) => {
+        var token = req.header('Authorization').replace('Bearer ', '');
+        console.log(token);
+        jwt.verify(token, 'KEYDUNGDEMAHOA', (err, decoded) => {
             if (err) {
                 res.status(401).json(
                     {

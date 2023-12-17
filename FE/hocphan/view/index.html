@@ -625,9 +625,10 @@
                         MaRFID: dataSinhViens[x][4],
                     })
                 }
-                fetch("http://localhost:3000/api/addSinhViensToHP/" + HocPhan.MaHocPhan + "?token=" + getCookie('Token'), {
+                fetch("http://localhost:3000/api/addSinhViensToHP/" + HocPhan.MaHocPhan, {
                     method: "POST",
                     headers: {
+                        Authorization: 'Bearer ' + getCookie('Token'),
                         'Accept': 'application/json, text/plain, */*',
                         'Content-Type': 'application/json'
                     },
@@ -655,9 +656,10 @@
             const LopCoVan = document.getElementById('lopcovan').value;
             const MaRFID = document.getElementById('rfidCode').value;
             if (MaSinhVien == '' || Ten == '' || LopCoVan == '' || MaRFID == '') return alert('Vui lòng nhập đầy đủ thông tin');
-            fetch("http://localhost:3000/api/addSinhVientoHP/" + HocPhan.MaHocPhan + "?token=" + getCookie('Token'), {
+            fetch("http://localhost:3000/api/addSinhVientoHP/" + HocPhan.MaHocPhan, {
                 method: 'POST',
                 headers: {
+                    Authorization: 'Bearer ' + getCookie('Token'),
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
@@ -684,7 +686,14 @@
                 })
         }
         window.onload = () => {
-            fetch("http://localhost:3000/api/getHocPhan?MaHocPhan=" + searchParams.get('id') + "&token=" + getCookie('Token'))
+            fetch("http://localhost:3000/api/getHocPhan?MaHocPhan=" + searchParams.get('id'), {
+                method: "GET",
+                headers: {
+                    Authorization: 'Bearer ' + getCookie('Token'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
                 .then(res => res.json())
                 .then(response => {
                     HocPhan.Ten = response.hocphan.Ten;

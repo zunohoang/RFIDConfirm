@@ -115,13 +115,13 @@ bool DiemDanh(String idCard) {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
 
-    String apiURL = URLdiemdanh + "?token=" + Token;
+    String apiURL = URLdiemdanh;// + "?token=" + Token;
     // Sử dụng WiFiClient để chuyển cho HTTPClient
     WiFiClient client;
     
     http.begin(client, apiURL);
     http.addHeader("Content-Type", "application/json");
-
+    http.addHeader("Authorization", "Bearer "+ Token);
     // Tạo đối tượng JSON để lưu trữ dữ liệu
     DynamicJsonDocument jsonDocument(200);  // Dung lượng đủ cho dữ liệu của bạn
 

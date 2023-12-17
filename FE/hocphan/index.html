@@ -427,9 +427,10 @@
     }
     function deleteHP(x) {
       if (confirm("Bạn có chắc chắn muốn xóa học phần " + x + " không?")) {
-        fetch("http://localhost:3000/api/deleteHocPhan/" + x + "?token=" + getCookie('Token'), {
+        fetch("http://localhost:3000/api/deleteHocPhan/" + x, {
           method: 'POST',
           headers: {
+            Authorization: 'Bearer ' + getCookie('Token'),
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json'
           },
@@ -497,11 +498,10 @@
           var startTime = dataHocPhans[x][4];
           var endTime = dataHocPhans[x][5];
           var thuHoc = dataHocPhans[x][6];
-          var listSinhViens = maSinhVien.split('-');
+          /* var listSinhViens = "";
           var SinhViens = [];
           for (let x in listSinhViens) {
             var temp = listSinhViens[x].split(',');
-            console.log(temp);
             var q = temp[3];
             SinhViens.push({
               Ten: temp[0].slice(1),
@@ -509,7 +509,7 @@
               MaSinhVien: temp[2],
               MaRFID: temp[3].slice(1, q.length)
             });
-          }
+          } */
           var listLichHoc = thuHoc.split(',');
           var LichHoc = [];
           for (let x in listLichHoc) {
@@ -529,7 +529,7 @@
           sheet.push({
             Ten: tenHocPhan,
             MaHocPhan: maHocPhan,
-            SinhVien: SinhViens,
+            // SinhVien: SinhViens,
             BatDau: startTime,
             KetThuc: endTime,
             LichHoc: LichHoc
@@ -538,6 +538,7 @@
         fetch("http://localhost:3000/api/addHocPhans?token=" + getCookie('Token'), {
           method: 'POST',
           headers: {
+            Authorization: 'Bearer ' + getCookie('Token'),
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json'
           },
@@ -609,9 +610,10 @@
 
       //const filteredDays = filterDaysByWeekday(startDate, endDate, targetWeekdays);
 
-      fetch("http://localhost:3000/api/addHocPhan?token=" + getCookie('Token'), {
+      fetch("http://localhost:3000/api/addHocPhan", {
         method: 'POST',
         headers: {
+          Authorization: 'Bearer ' + getCookie('Token'),
           'Accept': 'application/json, text/plain, */*',
           'Content-Type': 'application/json'
         },
@@ -640,7 +642,14 @@
     }
 
     window.onload = () => {
-      fetch("http://localhost:3000/api/getHocPhan?token=" + getCookie('Token'))
+      fetch("http://localhost:3000/api/getHocPhan?", {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer ' + getCookie('Token'),
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        }
+      })
         .then(res => res.json())
         .then(response => {
           console.log(response);
